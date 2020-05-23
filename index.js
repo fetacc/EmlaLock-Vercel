@@ -8,6 +8,7 @@ const app = express();
 const port = 5000;
 const userId = process.env.USER_ID;
 const apiKey = process.env.API_KEY;
+const errorMessage = process.env.ERROR_MESSAGE || "An error has occurred. Please send me a DM, letting me know and whether you would like me to add extra time or requirements to my session as a punishment";
 
 const maxHitsPerIPPerMinute = parseInt(process.env.MAX_HITS_PER_IP_PER_MINUTE);
 
@@ -36,10 +37,10 @@ const buildQueryPath = function (method) {
   let setTo = false;
 
   let fromValue = 0;
-  let fromName = "";
+  let fromName = method.endsWith("random") ? "from" : "value";;
   let toValue = 0;
 
-  let message = method.endsWith("random") ? "from" : "value";
+  let message = "";
 
   switch (method) {
     case "info":
@@ -50,7 +51,7 @@ const buildQueryPath = function (method) {
     case "addmaximum":
       fromValue = rand(OneHour, OneDay);
 
-      message = `Thank you for adding ${pretty(fromValue)} to my ${ method === "add" ? "duration" : method === "addmaximum" ? "maximum duration" : "minimum duration"}`; 
+      message = `Thank you for adding ${pretty(fromValue)} to my ${method === "add" ? "duration" : method === "addmaximum" ? "maximum duration" : "minimum duration"}`;
       break;
     case "addrequirement":
       fromValue = rand(minRequirement, maxRequirement);
@@ -66,7 +67,7 @@ const buildQueryPath = function (method) {
       setTo = true;
       toValue = rand(OneDay, OneWeek);
 
-      message = `Thank you for adding somewhere between ${pretty(fromValue)} and ${pretty(toValue)} to my ${ method === "add" ? "duration" : method === "addmaximum" ? "maximum duration" : "minimum duration"}`; 
+      message = `Thank you for adding somewhere between ${pretty(fromValue)} and ${pretty(toValue)} to my ${method === "add" ? "duration" : method === "addmaximum" ? "maximum duration" : "minimum duration"}`;
       break;
     case "addrequirementrandom":
       fromValue = minRequirement;
@@ -74,7 +75,7 @@ const buildQueryPath = function (method) {
       setTo = true;
       toValue = maxRequirement;
 
-      message = `Thank you for giving me somwewhere between ${fromValue} and ${toValue} extra requirements`;
+      message = `Thank you for giving me somewhere between ${fromValue} and ${toValue} extra requirements`;
       break;
     default:
       break;
@@ -113,7 +114,11 @@ const run = function (res) {
 
     let queryProps = buildQueryPath(selectedMethod);
     let query = getOptions(queryProps.Url);
-    request.get(query, function (x, y, z) { res.send(queryProps.Message); });
+    console.log("Executing API call - " + query.url)
+    request.get(query, function (x, y, z) {
+      var message = y.statusCode === 200 ? queryProps.Message : errorMessage;
+      res.send(message);
+    });
 
   });
 
@@ -134,7 +139,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Home route
 app.get("/", (req, res) => {
-   run(res);
+  run(res);
 });
 
 // Listen on port 5000
