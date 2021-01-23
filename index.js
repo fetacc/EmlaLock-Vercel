@@ -95,6 +95,16 @@ const run = function (res) {
   let infoQuery = buildQueryPath("info");
   request.get(getOptions(infoQuery.Url), (err, result, userInfo) => {
 
+    if (result.statusCode !== 200 && result.statusCode !== 304) {
+      res.send("Cannot access API info for user " + userInfo.username);
+      return;
+    }
+
+    if (!userInfo.chastitysession.hasOwnProperty(minduration)) {
+      res.send("User " + userInfo.username + " is not currently in an active session");
+      return;
+    }
+
     var allowedMethods = ["add", "addrandom"];
 
     if (userInfo.chastitysession.minduration > 0) {
