@@ -25,7 +25,7 @@ const rand = function (min, max) { // min and max included
 };
 
 const getOptions = path => ({
-  url: `https://emlalock.com/${path}`,
+  url: `https://api.emlalock.com/${path}`,
   json: true
 });
 
