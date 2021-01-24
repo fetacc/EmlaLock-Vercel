@@ -96,12 +96,12 @@ const run = function (res) {
   request.get(getOptions(infoQuery.Url), (err, result, userInfo) => {
 
     if (result.statusCode !== 200 && result.statusCode !== 304) {
-      res.send("Cannot access API info for user " + userInfo.username);
+      res.send("Cannot access API info for user " + userInfo.user.username);
       return;
     }
 
-    if (!userInfo.chastitysession.hasOwnProperty(minduration)) {
-      res.send("User " + userInfo.username + " is not currently in an active session");
+    if (!userInfo.chastitysession.hasOwnProperty("minduration")) {
+      res.send("User " + userInfo.user.username + " is not currently in an active session");
       return;
     }
 
