@@ -9,6 +9,7 @@ const port = 5000;
 const userId = process.env.USER_ID;
 const apiKey = process.env.API_KEY;
 const errorMessage = process.env.ERROR_MESSAGE || "An error has occurred. Please send me a DM, letting me know and whether you would like me to add extra time or requirements to my session as a punishment";
+const noMoreReqsUntilBelow = parseInt(process.env.NoMoreReqsUntilBelow);
 
 const maxHitsPerIPPerMinute = parseInt(process.env.MAX_HITS_PER_IP_PER_MINUTE);
 
@@ -115,7 +116,7 @@ const run = function (res) {
       allowedMethods.push("addmaximum");
       allowedMethods.push("addmaximumrandom");
     }
-    if (userInfo.chastitysession.requirements > 0) {
+    if (userInfo.chastitysession.requirements > 0 && userInfo.chastitysession.requirements < noMoreReqsUntilBelow) {
       allowedMethods.push("addrequirement");
       allowedMethods.push("addrequirementrandom");
     }
@@ -126,7 +127,7 @@ const run = function (res) {
     let query = getOptions(queryProps.Url);
     console.log("Executing API call - " + query.url)
     request.get(query, function (x, y, z) {
-      var message = y.statusCode === 200 ? queryProps.Message : errorMessage;
+      var message = y.statusCode < 400 ? queryProps.Message : errorMessage;
       res.send(message);
     });
 
