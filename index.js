@@ -83,7 +83,7 @@ const buildQueryPath = function (method) {
   }
 
   let from = setFrom ? `&${fromName}=${fromValue}` : "";
-  let to = setTo ? `$to=${toValue}` : "";
+  let to = setTo ? `&to=${toValue}` : "";
   return {
     Url: `${method}?userid=${userId}&apikey=${apiKey}${from}${to}`,
     Message: message
@@ -127,7 +127,7 @@ const run = function (res) {
     let query = getOptions(queryProps.Url);
     console.log("Executing API call - " + query.url)
     request.get(query, function (x, y, z) {
-      console.log("StatusCode: " + y.statusCode + "\nStatusMessage: " + y.statusMessage)
+      console.log("StatusCode: " + y.statusCode + "\nStatusMessage: " + y.statusMessage);
       var message = y.statusCode < 400 ? queryProps.Message : errorMessage;
       res.send(message);
     });
