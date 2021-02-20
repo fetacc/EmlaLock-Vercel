@@ -127,6 +127,7 @@ const run = function (res) {
     let query = getOptions(queryProps.Url);
     console.log("Executing API call - " + query.url)
     request.get(query, function (x, y, z) {
+      console.log("StatusCode: " + y.statusCode + "\nStatusMessage: " + y.statusMessage)
       var message = y.statusCode < 400 ? queryProps.Message : errorMessage;
       res.send(message);
     });
