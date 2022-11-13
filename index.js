@@ -139,7 +139,7 @@ const run = function (res) {
       var success = y.statusCode < 400;
       
       if (success) {
-        var message = queryPrope.Message + "\n- " + userInfo.user.username;
+        var message = queryProps.Message + "\n- " + userInfo.user.username;
         res.send(message);
       } else {
         res.send(errorMessage);
