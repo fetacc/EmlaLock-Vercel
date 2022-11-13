@@ -117,6 +117,13 @@ const run = function (res) {
       allowedMethods.push("addmaximumrandom");
     }
     if (userInfo.chastitysession.requirements > 0 && userInfo.chastitysession.requirements < noMoreReqsUntilBelow) {
+      
+      if (userInfo.chastitysession.requirements === 1) {
+        // If user is on their last requirement then let's make sure they get a few more.
+        // Better hope no one calls this while you're on your last one!
+        allowedMethods = [];
+      }
+      
       allowedMethods.push("addrequirement");
       allowedMethods.push("addrequirementrandom");
     }
@@ -128,8 +135,16 @@ const run = function (res) {
     console.log("Executing API call - " + query.url)
     request.get(query, function (x, y, z) {
       console.log("StatusCode: " + y.statusCode + "\nStatusMessage: " + y.statusMessage);
-      var message = y.statusCode < 400 ? queryProps.Message : errorMessage;
-      res.send(message);
+      
+      var success = y.statusCode < 400;
+      
+      if (success) {
+        var message = queryPrope.Message + "\n- " + userInfo.user.username;
+        res.send(message);
+      } else {
+        res.send(errorMessage);
+      }
+      
     });
 
   });
