@@ -4,7 +4,6 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const app = express();
 
-
 const port = 5000;
 const userId = process.env.USER_ID;
 const apiKey = process.env.API_KEY;
@@ -20,6 +19,7 @@ const OneWeek = OneDay * 7;
 
 const minRequirement = parseInt(process.env.MIN_REQUIREMENT);
 const maxRequirement = parseInt(process.env.MAX_REQUIREMENT);
+const allowAddReqWhenZero = !!process.env.ALLOW_ADD_REQ_WHEN_ZERO;
 
 const rand = function (min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -116,7 +116,7 @@ const run = function (res) {
       allowedMethods.push("addmaximum");
       allowedMethods.push("addmaximumrandom");
     }
-    if (userInfo.chastitysession.requirements > 0 && userInfo.chastitysession.requirements < noMoreReqsUntilBelow) {
+    if ((allowAddReqWhenZero || userInfo.chastitysession.requirements > 0) && userInfo.chastitysession.requirements < noMoreReqsUntilBelow) {
       
       if (userInfo.chastitysession.requirements === 1) {
         // If user is on their last requirement then let's make sure they get a few more.
